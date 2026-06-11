@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Editor
+.vscode/
+
+# Nested clone of the remote (not part of the project)
+mini-db/
