@@ -3,6 +3,10 @@ from tinydb.TokenType import TokenType
 from tinydb.ast import SelectStmt
 from tinydb.ast import Column
 from tinydb.ast import Table
+from tinydb.ast import Identifier
+from tinydb.ast import Literal
+from tinydb.ast import BinaryExpr
+from tinydb.ast import Expr
 
 
 class ParseError(Exception):
@@ -64,15 +68,42 @@ class Parser:
 
         return cols
         
+    def where_clause(self):
+        t = self.peek()
+        match t.type:
+            case TokenType.EOF:
+                self.consume(TokenType.EOF)
+                return None
+            case TokenType.KW_WHERE:
+                self.consume(TokenType.KW_WHERE)
+                return self.parse_where_clause()
+    
+    def parseOperand(self):
+        t = self.peek()
+        match t.type:
+            case TokenType.IDENTIFIER:
+                return t.lexeme
+            case TokenType.STRING | TokenType.NUMBER:
+                return t.literal
+
+    def parse_where_clause(self):
+        left  = self.parseOperand()
+        self.consume(TokenType.EQ)
+        right = self.parseOperand()
+        br = BinaryExpr("=",left,right)
+        return br
+
         
+    
     def parseSelectStmt(self):
         sst = self.consume(TokenType.KW_SELECT)
         cols = self.matchColumn()
         self.consume(TokenType.KW_FROM)
         table = self.consume(TokenType.IDENTIFIER)
-        self.consume(TokenType.EOF)
+       
         tt = Table(table.lexeme,table.line,table.column,None)
-        selectStatement = SelectStmt(cols,tt,sst.line,sst.column)
+        where = self.where_clause()
+        selectStatement = SelectStmt(cols,tt,sst.line,sst.column,where)
         return selectStatement
 
         

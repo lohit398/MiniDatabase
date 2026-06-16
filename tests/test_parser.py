@@ -15,6 +15,17 @@ def test_parser_star():
     assert sst.columns[0].token.type == TokenType.STAR
     assert sst.table.name == "users"
 
+def test_parser_star_where():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where x = 5"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+
+
 def test_parser_col_list():
     t = Tokenizer()
     t.input = "SELECT id,name,dob,Username FROM users"
