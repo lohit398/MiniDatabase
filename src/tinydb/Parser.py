@@ -82,9 +82,16 @@ class Parser:
         t = self.peek()
         match t.type:
             case TokenType.IDENTIFIER:
-                return t.lexeme
-            case TokenType.STRING | TokenType.NUMBER:
-                return t.literal
+                self.consume(t.type)
+                return Identifier(t.lexeme,t.line,t.column)
+            case TokenType.STRING:
+                self.consume(TokenType.STRING)
+                return Literal(t.literal,t.line,t.column)
+            case TokenType.NUMBER:
+                self.consume(TokenType.NUMBER)
+                return Literal(t.literal,t.line,t.column)
+            case _:
+                raise ParseError(f"Unexpected Type: {t.type}")
 
     def parse_where_clause(self):
         left  = self.parseOperand()

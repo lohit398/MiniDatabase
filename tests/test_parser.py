@@ -3,6 +3,7 @@ import pytest
 from tinydb.Tokenizer import Tokenizer
 from tinydb.TokenType import TokenType
 from tinydb.Parser import ParseError, Parser
+from tinydb.ast import BinaryExpr, Identifier,Literal
 
 def test_parser_star():
     t = Tokenizer()
@@ -24,6 +25,18 @@ def test_parser_star_where():
     sst = p.parse()
 
     assert sst.where != None
+
+def test_parser_star_where_rev():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where 5 = x"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+    l = Literal(5,1,25)
+    i = Identifier("x",1,29)
+    assert sst.where.opr == "="
+    assert sst.where.left == l
 
 
 def test_parser_col_list():
