@@ -195,6 +195,12 @@ class Tokenizer:
                         self.addToken(Token(TokenType.LTE,"<=",None,self.line,self.column))
                     else:
                         self.addToken(Token(TokenType.LT,"<",None,self.line,self.column))
+                case "!":
+                    self.advance()
+                    if(self.peek() == "="):
+                        self.addToken(Token(TokenType.NEQ,"!=",None,self.line,self.column))
+                    else:
+                        self.errors.append(f"Invalid Character: Line {self.line} at column {self.column}")
             self.advance()
         self.tokens.append(Token(TokenType.EOF,"EOF",None,self.line,self.column))
             

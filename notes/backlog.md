@@ -96,6 +96,13 @@ Cross-day deferred work. Items added with reason and "when this bites" so priori
 - **Fix concept:** Delete the line.
 - **When this bites:** Never, but the next reader (you or someone else) wastes 5 seconds parsing whether it's significant.
 
+### PARSER-9 — Unused `isEnd()` / `previous()` helpers in `Parser`
+
+- **What:** Added 2026-06-17 during the precedence work; `matchTypes()` is used, but `isEnd()` and `previous()` are never called. Leftovers from a token-scanning draft.
+- **Why it matters:** Dead code is noise and signals the scanning-mindset draft that the recursive-descent rewrite replaced.
+- **Fix concept:** Delete both methods. Re-add only if a real caller appears.
+- **When this bites:** Owner deferred cleanup to the next reference/refactor pass (planned 2026-06-18). Trigger: that pass, or whenever either method is touched.
+
 ---
 
 ## Resolved

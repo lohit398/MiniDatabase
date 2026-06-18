@@ -92,13 +92,76 @@ class Parser:
                 return Literal(t.literal,t.line,t.column)
             case _:
                 raise ParseError(f"Unexpected Type: {t.type}")
+    
+    def parse_operator(self):
+        t = self.peek()
+        
+        match t.type:
+            case TokenType.EQ:
+                self.consume(TokenType.EQ)
+            case TokenType.GT:
+                self.consume(TokenType.GT)
+            case TokenType.LT:
+                self.consume(TokenType.LT)
+            case TokenType.GTE:
+                self.consume(TokenType.GTE)
+            case TokenType.LTE:
+                self.consume(TokenType.LTE)
+            case TokenType.NEQ:
+                self.consume(TokenType.NEQ)
+            case _:
+                raise ParseError(f"Unexpected Type: {t.type}, expecting an operator")
+        return t.lexeme
+    
+
+    def isEnd(self):
+        if(self.peek().type == TokenType.EOF):
+            return True
+        return False
+    
+    def previous(self):
+        if(self.pos - 1 >= 0):
+            return self.tokens[self.pos-1]
+        return None
+
+    def matchTypes(self,types:list):
+        for i in types:
+            if(self.peek().type == i):
+                return True
+        return False
+    
+
+    def parse_equality(self):
+        left  = self.parseOperand()
+        opr = self.parse_operator()
+        right = self.parseOperand()
+        br = BinaryExpr(opr,left,right)
+        return br
+
+
+    def parse_logical_and(self):
+        expr = self.parse_equality()
+
+        while self.matchTypes([TokenType.KW_AND]):
+            #opr = self.peek().lexeme
+            self.consume(self.peek().type)
+            r = self.parse_equality()
+            expr = BinaryExpr("and",expr,r)
+        return expr
+    
+    def parse_logical_or(self):
+        expr = self.parse_logical_and()
+
+        while self.matchTypes([TokenType.KW_OR]):
+            #opr = self.peek().lexeme
+            self.consume(self.peek().type)
+            r = self.parse_logical_and()
+            expr = BinaryExpr("or",expr,r)
+        return expr
+
 
     def parse_where_clause(self):
-        left  = self.parseOperand()
-        self.consume(TokenType.EQ)
-        right = self.parseOperand()
-        br = BinaryExpr("=",left,right)
-        return br
+        return self.parse_logical_or()
 
         
     

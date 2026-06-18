@@ -30,7 +30,7 @@ def test_select_star_no_space():
 
 def test_select_star_filters():
     t2 = Tokenizer()
-    t2.input = "SELECT * FROM users WHERE id = 1AND name = 'Lohit'"
+    t2.input = "SELECT * FROM users WHERE id <> 1AND name = 'Lohit'"
     t2.scan()
     types = [tok.type for tok in t2.tokens]
     assert types == [
@@ -40,7 +40,7 @@ def test_select_star_filters():
         TokenType.IDENTIFIER,
         TokenType.KW_WHERE,
         TokenType.IDENTIFIER,
-        TokenType.EQ,
+        TokenType.NEQ,
         TokenType.NUMBER,
         TokenType.KW_AND,
         TokenType.IDENTIFIER,

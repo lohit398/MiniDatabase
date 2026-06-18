@@ -39,6 +39,79 @@ def test_parser_star_where_rev():
     assert sst.where.left == l
 
 
+def test_parser_star_where_GT():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where x > 5"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+    assert sst.where.opr == ">";
+
+
+def test_parser_star_where_AND():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where x <> 5 and x = 10"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+    assert sst.where.opr == "and"
+    assert sst.where.left != None
+    assert sst.where.left.left.name == "x"
+    assert sst.where.left.right.value == 5
+    assert sst.where.left.opr == "<>"
+    assert sst.where.right.left.name == "x"
+    assert sst.where.right.right.value == 10
+    assert sst.where.right.opr == "="
+
+
+def test_parser_star_where_AND_OR():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where x <> 5 AND x <> 10 or x > 15"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+    assert sst.where.opr == "or"
+    assert sst.where.left != None
+    assert sst.where.left.opr == "and"
+    assert sst.where.left.left.left.name == "x"
+    assert sst.where.left.left.right.value == 5
+    assert sst.where.left.left.opr == "<>"
+    
+
+def test_parser_star_where_NEQ():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where x <> 5"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+    assert sst.where.opr == "<>";
+
+
+def test_parser_star_where_NEQ1():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where x != 5"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+    assert sst.where.opr == "!=";
+
+
+
 def test_parser_col_list():
     t = Tokenizer()
     t.input = "SELECT id,name,dob,Username FROM users"
