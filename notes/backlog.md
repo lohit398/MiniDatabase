@@ -103,6 +103,14 @@ Cross-day deferred work. Items added with reason and "when this bites" so priori
 - **Fix concept:** Delete both methods. Re-add only if a real caller appears.
 - **When this bites:** Owner deferred cleanup to the next reference/refactor pass (planned 2026-06-18). Trigger: that pass, or whenever either method is touched.
 
+### PARSER-10 — Arithmetic operators (`+ - * /`) in expressions
+
+- **What:** WHERE values are currently bare operands (literal/identifier). No arithmetic sub-expressions (e.g. `WHERE age > 20 + 10`, `WHERE price * qty > 100`).
+- **Why it matters:** NOT needed for the week-1 done-bar (its canonical query has no arithmetic). Pure scope creep if built now.
+- **Fix concept:** Two more precedence rungs *below* `parse_equality`: `parse_term` (`+ -`) → `parse_factor` (`* /`) → operand. Same one-method-per-level ladder already in use — no new machinery.
+- **Learning trigger:** When the rungs multiply (arithmetic + unary `NOT`/`-` + parens), the explicit-method ladder gets verbose. THAT is the natural point to learn literal **Pratt parsing** (binding-power table) as the technique — not before. The contract names Pratt for the parser; this is where it earns its keep.
+- **When this bites:** When a real query or executor feature needs computed values. Not v1-week-1. Likely week 2+ (expression evaluator) or when JOIN/HAVING conditions arrive.
+
 ---
 
 ## Resolved

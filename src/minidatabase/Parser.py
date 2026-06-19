@@ -1,12 +1,12 @@
-from tinydb.TokenType import Token
-from tinydb.TokenType import TokenType
-from tinydb.ast import SelectStmt
-from tinydb.ast import Column
-from tinydb.ast import Table
-from tinydb.ast import Identifier
-from tinydb.ast import Literal
-from tinydb.ast import BinaryExpr
-from tinydb.ast import Expr
+from minidatabase.TokenType import Token
+from minidatabase.TokenType import TokenType
+from minidatabase.ast import SelectStmt
+from minidatabase.ast import Column
+from minidatabase.ast import Table
+from minidatabase.ast import Identifier
+from minidatabase.ast import Literal
+from minidatabase.ast import BinaryExpr
+from minidatabase.ast import Expr
 
 
 class ParseError(Exception):

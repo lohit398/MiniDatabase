@@ -1,5 +1,5 @@
 import sys
-from tinydb.TokenType import TokenType, KEYWORDS, Token
+from minidatabase.TokenType import TokenType, KEYWORDS, Token
 
 class Tokenizer:
     def __init__(self):

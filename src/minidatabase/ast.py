@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-from tinydb.TokenType import Token
+from minidatabase.TokenType import Token
 
 @dataclass
 class Expr:

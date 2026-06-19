@@ -36,7 +36,7 @@ Educational project to learn database internals through implementation. Inspired
 
 ### Week 1 — SQL Parser
 
-Done when: `minidb parse "SELECT name, age FROM users WHERE age > 30 AND country = 'US'"` prints a clean AST. Tests pass. Daily commits.
+Done when: `tinydb parse "SELECT name, age FROM users WHERE age > 30 AND country = 'US'"` prints a clean AST. Tests pass. Daily commits.
 
 | Day | Task |
 |---|---|

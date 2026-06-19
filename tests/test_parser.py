@@ -1,9 +1,9 @@
 import pytest
 
-from tinydb.Tokenizer import Tokenizer
-from tinydb.TokenType import TokenType
-from tinydb.Parser import ParseError, Parser
-from tinydb.ast import BinaryExpr, Identifier,Literal
+from minidatabase.Tokenizer import Tokenizer
+from minidatabase.TokenType import TokenType
+from minidatabase.Parser import ParseError, Parser
+from minidatabase.ast import BinaryExpr, Identifier,Literal
 
 def test_parser_star():
     t = Tokenizer()

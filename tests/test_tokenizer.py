@@ -1,5 +1,5 @@
-from tinydb.Tokenizer import Tokenizer
-from tinydb.TokenType import TokenType
+from minidatabase.Tokenizer import Tokenizer
+from minidatabase.TokenType import TokenType
 
 
 def test_select_star():

@@ -8,5 +8,8 @@ version = "0.1.0"
 description = "A mini relational database with an LLM-assisted query planner"
 requires-python = ">=3.10"
 
+[project.scripts]
+minidatabase = "minidatabase:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
