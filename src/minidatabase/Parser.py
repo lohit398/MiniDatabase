@@ -114,15 +114,15 @@ class Parser:
         return t.lexeme
     
 
-    def isEnd(self):
-        if(self.peek().type == TokenType.EOF):
-            return True
-        return False
+    # def isEnd(self):
+    #     if(self.peek().type == TokenType.EOF):
+    #         return True
+    #     return False
     
-    def previous(self):
-        if(self.pos - 1 >= 0):
-            return self.tokens[self.pos-1]
-        return None
+    # def previous(self):
+    #     if(self.pos - 1 >= 0):
+    #         return self.tokens[self.pos-1]
+    #     return None
 
     def matchTypes(self,types:list):
         for i in types:
