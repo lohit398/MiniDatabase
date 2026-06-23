@@ -166,7 +166,7 @@ def test_NEQ_error():
 
 def test_number_ending():
     t = Tokenizer()
-    t.input = "SELECT * from cols WHERE id = 1"
+    t.input = "SELECT * from cols WHERE id>1"
     t.scan()
     types = [tok.type for tok in t.tokens]
     assert types == [
@@ -183,7 +183,7 @@ def test_number_ending():
 
 def test_ft_ending():
     t = Tokenizer()
-    t.input = "SELECT * from cols WHERE id > 52.90897"
+    t.input = "SELECT * from cols WHERE id>52.90897"
     t.scan()
     types = [tok.type for tok in t.tokens]
     assert types == [
@@ -203,7 +203,7 @@ def test_pos():
     t.input = "SELECT * from cols WHERE id > 52.90897"
     t.scan()
     types = [tok.type for tok in t.tokens]
-    t.pos = 120
+    t.index = 120
     assert t.advance() == None
     assert t.peek() == "\0"
 

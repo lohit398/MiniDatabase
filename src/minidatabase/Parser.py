@@ -163,6 +163,22 @@ class Parser:
     def parse_where_clause(self):
         return self.parse_logical_or()
 
+
+    def parse_table_alias(self):
+
+        match self.peek().type:
+            case TokenType.IDENTIFIER:
+                t = self.peek()
+                self.consume(TokenType.IDENTIFIER)
+                return t.lexeme
+            case TokenType.KW_AS:
+                self.consume(TokenType.KW_AS)
+                t = self.peek()
+                self.consume(TokenType.IDENTIFIER)
+                return t.lexeme
+            case _:
+                return None
+
         
     
     def parseSelectStmt(self):
@@ -170,8 +186,14 @@ class Parser:
         cols = self.matchColumn()
         self.consume(TokenType.KW_FROM)
         table = self.consume(TokenType.IDENTIFIER)
-       
-        tt = Table(table.lexeme,table.line,table.column,None)
+
+        alias = self.parse_table_alias()
+        tt = None
+        if(alias == None):
+            tt = Table(table.lexeme,table.line,table.column,None)
+        else:
+            tt = Table(table.lexeme,table.line,table.column,alias)
+
         where = self.where_clause()
         selectStatement = SelectStmt(cols,tt,sst.line,sst.column,where)
         return selectStatement

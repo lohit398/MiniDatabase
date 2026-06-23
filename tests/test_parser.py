@@ -161,6 +161,50 @@ def test_peek_fun_out_of_bounds():
     assert p.match(TokenType.EOF) == None
     assert p.consume(TokenType.EOF) == None
 
+def test_parser_error_star_cold1():
+    t = Tokenizer()
+    t.input = "SELECT *,* FROM Users"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    #sst = p.parse()
+    with pytest.raises(ParseError, match="Expected KW_FROM*"):
+        p.parse()
+
+def test_parser_star_where_GTE():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users where 5 >= x"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.where != None
+    assert sst.where.opr == ">="
+
+
+def test_select_alias():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users usrs"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.table.alias == "usrs"
+
+
+def test_select_alias_with_as_where():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users as usrs WHERE id > 1"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    sst = p.parse()
+
+    assert sst.table.alias == "usrs"
+    assert sst.where.opr == ">";
+
     
 
    
