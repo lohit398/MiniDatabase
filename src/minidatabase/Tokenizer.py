@@ -32,6 +32,7 @@ class Tokenizer:
         dotCount = 0
         l = self.line
         col = self.column
+        print("In NUMBER")
         for i in range(self.index,len(self.input) + 1):
 
             if(self.peek().isdigit()):
@@ -48,7 +49,6 @@ class Tokenizer:
                 else:
                     self.addToken(Token(TokenType.NUMBER,f"{curr}",float(curr),l,col))
                 break
-            
             if(i == len(self.input)):
                 if(dotCount == 0):
                     self.addToken(Token(TokenType.NUMBER,f"{curr}",int(curr),l,col))
@@ -145,7 +145,6 @@ class Tokenizer:
                 if(hasError):
                     break
                 continue
-
             elif(char.isdigit()):
                 hasError = self.number()
                 if(hasError):
@@ -187,6 +186,7 @@ class Tokenizer:
                         self.addToken(Token(TokenType.GTE,">=",None,self.line,self.column))
                     else:
                         self.addToken(Token(TokenType.GT,">",None,self.line,self.column))
+                        continue
                 case "<":
                     self.advance()
                     if(self.peek() == ">"):
@@ -195,6 +195,7 @@ class Tokenizer:
                         self.addToken(Token(TokenType.LTE,"<=",None,self.line,self.column))
                     else:
                         self.addToken(Token(TokenType.LT,"<",None,self.line,self.column))
+                        continue
                 case "!":
                     self.advance()
                     if(self.peek() == "="):

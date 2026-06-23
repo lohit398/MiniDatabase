@@ -1,0 +1,42 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.0, pluggy-1.6.0 -- /home/lohit/Desktop/MiniDatabase/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/lohit/Desktop/MiniDatabase
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 32 items
+
+tests/test_parser.py::test_parser_star PASSED                            [  3%]
+tests/test_parser.py::test_parser_star_where PASSED                      [  6%]
+tests/test_parser.py::test_parser_star_where_rev PASSED                  [  9%]
+tests/test_parser.py::test_parser_star_where_GT PASSED                   [ 12%]
+tests/test_parser.py::test_parser_star_where_AND PASSED                  [ 15%]
+tests/test_parser.py::test_parser_star_where_AND_OR PASSED               [ 18%]
+tests/test_parser.py::test_parser_star_where_NEQ PASSED                  [ 21%]
+tests/test_parser.py::test_parser_star_where_NEQ1 PASSED                 [ 25%]
+tests/test_parser.py::test_parser_col_list PASSED                        [ 28%]
+tests/test_parser.py::test_parser_error_no_col PASSED                    [ 31%]
+tests/test_parser.py::test_parser_error_star_cold PASSED                 [ 34%]
+tests/test_parser.py::test_peek_fun_out_of_bounds PASSED                 [ 37%]
+tests/test_parser.py::test_parser_error_star_cold1 PASSED                [ 40%]
+tests/test_parser.py::test_parser_star_where_GTE PASSED                  [ 43%]
+tests/test_parser.py::test_select_alias PASSED                           [ 46%]
+tests/test_parser.py::test_select_alias_with_as_where PASSED             [ 50%]
+tests/test_tokenizer.py::test_select_star PASSED                         [ 53%]
+tests/test_tokenizer.py::test_select_star_no_space PASSED                [ 56%]
+tests/test_tokenizer.py::test_select_star_filters PASSED                 [ 59%]
+tests/test_tokenizer.py::test_unterminated_string_error PASSED           [ 62%]
+tests/test_tokenizer.py::test_string PASSED                              [ 65%]
+tests/test_tokenizer.py::test_select_floating_pt_number PASSED           [ 68%]
+tests/test_tokenizer.py::test_select_floating_pt_number_error PASSED     [ 71%]
+tests/test_tokenizer.py::test_select_multi_line_query PASSED             [ 75%]
+tests/test_tokenizer.py::test_empty_query PASSED                         [ 78%]
+tests/test_tokenizer.py::test_concat PASSED                              [ 81%]
+tests/test_tokenizer.py::test_concat_error PASSED                        [ 84%]
+tests/test_tokenizer.py::test_NEQ_error PASSED                           [ 87%]
+tests/test_tokenizer.py::test_number_ending PASSED                       [ 90%]
+tests/test_tokenizer.py::test_ft_ending PASSED                           [ 93%]
+tests/test_tokenizer.py::test_pos PASSED                                 [ 96%]
+tests/test_tokenizer.py::test_plus PASSED                                [100%]
+
+============================== 32 passed in 0.02s ==============================

@@ -176,7 +176,7 @@ def test_number_ending():
         TokenType.IDENTIFIER,
         TokenType.KW_WHERE,
         TokenType.IDENTIFIER,
-        TokenType.EQ,
+        TokenType.GT,
         TokenType.NUMBER,
         TokenType.EOF
     ]
