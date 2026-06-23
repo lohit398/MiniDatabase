@@ -111,13 +111,6 @@ Cross-day deferred work. Items added with reason and "when this bites" so priori
 - **Learning trigger:** When the rungs multiply (arithmetic + unary `NOT`/`-` + parens), the explicit-method ladder gets verbose. THAT is the natural point to learn literal **Pratt parsing** (binding-power table) as the technique — not before. The contract names Pratt for the parser; this is where it earns its keep.
 - **When this bites:** When a real query or executor feature needs computed values. Not v1-week-1. Likely week 2+ (expression evaluator) or when JOIN/HAVING conditions arrive.
 
-### TOKENIZER-7 — Number immediately after an operator (no space) is silently dropped
-
-- **What:** `a>5` tokenizes to `[IDENTIFIER, GT, EOF]` — the `5` vanishes, no NUMBER token, no error. `a > 5` (spaced) is correct: `[IDENTIFIER, GT, NUMBER, EOF]`. Same for any number directly after an operator with no whitespace.
-- **Why it matters:** Silent input loss. A valid query `WHERE a>5` then crashes the parser downstream (`Unexpected Type: EOF` when it asks for the right operand) — the error surfaces far from the real cause. Every WHERE test happens to space its operators, so the suite never caught it.
-- **Fix concept:** In `scan()`, after emitting an operator token, the index/advance bookkeeping skips the following digit. Trace `number()` entry: it's likely only entered when a digit is the *first* char of a fresh lexeme, and the post-operator path advances past the digit before `number()` gets a chance. Confirm by stepping `a>5` char-by-char.
-- **Status:** Pre-existing tokenizer bug, surfaced 2026-06-22 while probing aliases. **Scheduled for 2026-06-23.** Not week-1 scope — does not block week-1 close.
-
 ### PARSER-11 — `parse()` silently swallows trailing tokens after the statement
 
 - **What:** `parse()` returns after `parseSelectStmt()` without asserting the stream is at EOF. Extra/malformed tokens after the parsed statement are silently discarded. `SELECT * FROM users x y z` → parses fine, `y z` dropped. `SELECT * FROM users blah blah WHERE a > 5` → `alias='blah'`, `where=None` — the WHERE is dropped because parsing stops at the second identifier and never errors.
@@ -129,4 +122,9 @@ Cross-day deferred work. Items added with reason and "when this bites" so priori
 
 ## Resolved
 
-*(none yet — track resolutions here as items get fixed)*
+### TOKENIZER-7 — Number immediately after an operator (no space) was silently dropped — RESOLVED 2026-06-22
+
+- **Was:** `a>5` → `[IDENTIFIER, GT, EOF]`, the `5` silently dropped; `WHERE a>5` then crashed the parser with `Unexpected Type: EOF`. Suite never caught it because every WHERE test spaced its operators.
+- **Root cause:** double-advancing — after emitting the operator token the index advanced once for the operator and again before `number()` started, skipping the following digit.
+- **Fix:** removed the extra advance. Verified clean across `a>5`, `id>1`, `x<10`, `p>=4.5`, `n<>7`, `c!=9`, `b||2`; CLI output is AST-only (leftover debug prints stripped); 32 tests green. Tests at `test_tokenizer.py:169,186` assert the full token list incl. NUMBER (red pre-fix).
+- **Commit:** pending (fixed late 2026-06-22; commit first thing 2026-06-23).

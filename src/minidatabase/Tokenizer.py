@@ -32,7 +32,6 @@ class Tokenizer:
         dotCount = 0
         l = self.line
         col = self.column
-        print("In NUMBER")
         for i in range(self.index,len(self.input) + 1):
 
             if(self.peek().isdigit()):
