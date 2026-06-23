@@ -185,13 +185,13 @@ def test_parser_star_where_GTE():
 
 def test_select_alias():
     t = Tokenizer()
-    t.input = "SELECT* FROM users usrs"
+    t.input = "SELECT* FROM users usr"
     t.scan()
     tokens = t.tokens
     p = Parser(tokens)
     sst = p.parse()
 
-    assert sst.table.alias == "usrs"
+    assert sst.table.alias == "usr"
 
 
 def test_select_alias_with_as_where():
@@ -206,9 +206,14 @@ def test_select_alias_with_as_where():
     assert sst.where.opr == ">";
 
     
-
-   
-    
+def test_parser_rejects_trailing_tokens():
+    t = Tokenizer()
+    t.input = "SELECT * FROM Users x y z"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    with pytest.raises(ParseError,match=r"line \d+, col \d+"):
+        p.parse()
 
 
 

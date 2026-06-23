@@ -178,8 +178,7 @@ class Parser:
                 return t.lexeme
             case _:
                 return None
-
-        
+    
     
     def parseSelectStmt(self):
         sst = self.consume(TokenType.KW_SELECT)
@@ -196,6 +195,7 @@ class Parser:
 
         where = self.where_clause()
         selectStatement = SelectStmt(cols,tt,sst.line,sst.column,where)
+        self.consume(TokenType.EOF)
         return selectStatement
 
         
