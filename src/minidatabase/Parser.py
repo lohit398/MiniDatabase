@@ -72,11 +72,12 @@ class Parser:
         t = self.peek()
         match t.type:
             case TokenType.EOF:
-                self.consume(TokenType.EOF)
                 return None
             case TokenType.KW_WHERE:
                 self.consume(TokenType.KW_WHERE)
                 return self.parse_where_clause()
+            case _:
+                raise ParseError(f"Unexpected {t.type} line {t.line}, col {t.column}")
     
     def parseOperand(self):
         t = self.peek()
