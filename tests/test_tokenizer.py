@@ -156,3 +156,79 @@ def test_concat_error():
     t.scan()
     types = [tok.type for tok in t.tokens]
     assert len(t.errors) > 0
+
+def test_NEQ_error():
+    t = Tokenizer()
+    t.input = "SELECT id from cols WHERE id ! 1"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert len(t.errors) > 0
+
+def test_number_ending():
+    t = Tokenizer()
+    t.input = "SELECT * from cols WHERE id = 1"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert types == [
+        TokenType.KW_SELECT,
+        TokenType.STAR,
+        TokenType.KW_FROM,
+        TokenType.IDENTIFIER,
+        TokenType.KW_WHERE,
+        TokenType.IDENTIFIER,
+        TokenType.EQ,
+        TokenType.NUMBER,
+        TokenType.EOF
+    ]
+
+def test_ft_ending():
+    t = Tokenizer()
+    t.input = "SELECT * from cols WHERE id > 52.90897"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert types == [
+        TokenType.KW_SELECT,
+        TokenType.STAR,
+        TokenType.KW_FROM,
+        TokenType.IDENTIFIER,
+        TokenType.KW_WHERE,
+        TokenType.IDENTIFIER,
+        TokenType.GT,
+        TokenType.NUMBER,
+        TokenType.EOF
+    ]
+
+def test_pos():
+    t = Tokenizer()
+    t.input = "SELECT * from cols WHERE id > 52.90897"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    t.pos = 120
+    assert t.advance() == None
+    assert t.peek() == "\0"
+
+
+def test_plus():
+    t = Tokenizer()
+    t.input = "SELECT * from cols WHERE id+x > 52.90897 OR id-x < 40.82"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert types == [
+        TokenType.KW_SELECT,
+        TokenType.STAR,
+        TokenType.KW_FROM,
+        TokenType.IDENTIFIER,
+        TokenType.KW_WHERE,
+        TokenType.IDENTIFIER,
+        TokenType.PLUS,
+        TokenType.IDENTIFIER,
+        TokenType.GT,
+        TokenType.NUMBER,
+        TokenType.KW_OR,
+        TokenType.IDENTIFIER,
+        TokenType.MINUS,
+        TokenType.IDENTIFIER,
+        TokenType.LT,
+        TokenType.NUMBER,
+        TokenType.EOF
+    ]
