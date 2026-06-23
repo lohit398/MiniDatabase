@@ -148,6 +148,21 @@ def test_parser_error_star_cold():
     #sst = p.parse()
     with pytest.raises(ParseError, match="Expected KW_FROM*"):
         p.parse()
+
+def test_peek_fun_out_of_bounds():
+    t = Tokenizer()
+    t.input = "SELECT* FROM users"
+    t.scan()
+    tokens = t.tokens
+    p = Parser(tokens)
+    p.pos = 10
+    assert p.peek() == None
+    assert p.advance() == None
+    assert p.match(TokenType.EOF) == None
+    assert p.consume(TokenType.EOF) == None
+
+    
+
    
     
 

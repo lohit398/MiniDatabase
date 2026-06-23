@@ -30,7 +30,7 @@ def test_select_star_no_space():
 
 def test_select_star_filters():
     t2 = Tokenizer()
-    t2.input = "SELECT * FROM users WHERE id <> 1AND name = 'Lohit'"
+    t2.input = "SELECT * FROM users WHERE (id <> 1AND name = 'Lohit')"
     t2.scan()
     types = [tok.type for tok in t2.tokens]
     assert types == [
@@ -39,6 +39,7 @@ def test_select_star_filters():
         TokenType.KW_FROM,
         TokenType.IDENTIFIER,
         TokenType.KW_WHERE,
+        TokenType.LPAREN,
         TokenType.IDENTIFIER,
         TokenType.NEQ,
         TokenType.NUMBER,
@@ -46,6 +47,7 @@ def test_select_star_filters():
         TokenType.IDENTIFIER,
         TokenType.EQ,
         TokenType.STRING,
+        TokenType.RPAREN,
         TokenType.EOF
     ]
 
@@ -59,7 +61,7 @@ def test_unterminated_string_error():
 
 def test_string():
     t2 = Tokenizer()
-    t2.input = "SELECT * FROM users WHERE name = 'Lohit' AND id = 1"
+    t2.input = "SELECT * FROM users WHERE name = 'Lohit' AND id != 1"
     t2.scan()
     types = [tok.type for tok in t2.tokens]
     assert types == [
@@ -73,7 +75,84 @@ def test_string():
         TokenType.STRING,
         TokenType.KW_AND,
         TokenType.IDENTIFIER,
-        TokenType.EQ,
+        TokenType.NEQ,
         TokenType.NUMBER,
         TokenType.EOF
     ]
+
+def test_select_floating_pt_number():
+    t1 = Tokenizer()
+    t1.input = "SELECT id,percentage FROM users where percentage >= 94.56123 AND id < 20 AND asd <= 21"
+    t1.scan()
+    types = [tok.type for tok in t1.tokens]
+    assert types == [
+        TokenType.KW_SELECT,
+        TokenType.IDENTIFIER,
+        TokenType.COMMA,
+        TokenType.IDENTIFIER,
+        TokenType.KW_FROM,
+        TokenType.IDENTIFIER,
+        TokenType.KW_WHERE,
+        TokenType.IDENTIFIER,
+        TokenType.GTE,
+        TokenType.NUMBER,
+        TokenType.KW_AND,
+        TokenType.IDENTIFIER,
+        TokenType.LT,
+        TokenType.NUMBER,
+        TokenType.KW_AND,
+        TokenType.IDENTIFIER,
+        TokenType.LTE,
+        TokenType.NUMBER,
+        TokenType.EOF
+    ]
+
+def test_select_floating_pt_number_error():
+    t1 = Tokenizer()
+    t1.input = "SELECT id,percentage FROM users where percentage > 4.56.1"
+    t1.scan()
+    types = [tok.type for tok in t1.tokens]
+    assert len(t1.errors) > 0
+
+
+def test_select_multi_line_query():
+    t1 = Tokenizer()
+    t1.input = """SELECT id,percentage FROM users
+    where percentage > 65.78"""
+    t1.scan()
+    types = [tok.type for tok in t1.tokens]
+    assert types == [
+        TokenType.KW_SELECT,
+        TokenType.IDENTIFIER,
+        TokenType.COMMA,
+        TokenType.IDENTIFIER,
+        TokenType.KW_FROM,
+        TokenType.IDENTIFIER,
+        TokenType.KW_WHERE,
+        TokenType.IDENTIFIER,
+        TokenType.GT,
+        TokenType.NUMBER,
+        TokenType.EOF
+    ]
+
+
+def test_empty_query():
+    t = Tokenizer()
+    t.input = ""
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert types == []
+
+def test_concat():
+    t = Tokenizer()
+    t.input = "SELECT a_col||b_col from cols"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert types == [TokenType.KW_SELECT,TokenType.IDENTIFIER,TokenType.CONCAT,TokenType.IDENTIFIER,TokenType.KW_FROM,TokenType.IDENTIFIER,TokenType.EOF]
+
+def test_concat_error():
+    t = Tokenizer()
+    t.input = "SELECT a_col|b_col from cols"
+    t.scan()
+    types = [tok.type for tok in t.tokens]
+    assert len(t.errors) > 0
