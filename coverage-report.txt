@@ -4,9 +4,9 @@ _______________ coverage: platform linux, python 3.12.3-final-0 ________________
 
 Name                            Stmts   Miss Branch BrPart  Cover   Missing
 ---------------------------------------------------------------------------
-src/minidatabase/Parser.py        155      8     56      7    93%   77->exit, 88-89, 93-94, 105, 109, 112-113, 203->exit
+src/minidatabase/Parser.py        156      8     56      7    93%   77->exit, 88-89, 93-94, 105, 109, 112-113, 203->exit
 src/minidatabase/TokenType.py      49      1      0      0    98%   18
-src/minidatabase/Tokenizer.py     167     10     90      6    93%   14-17, 36->60, 53-57, 66->78, 162, 164, 172
+src/minidatabase/Tokenizer.py     166     10     90      6    93%   14-17, 35->59, 52-56, 65->77, 161, 163, 171
 src/minidatabase/__init__.py       20     14      0      0    30%   9-15, 18-25
 src/minidatabase/ast.py            37      0      0      0   100%
 ---------------------------------------------------------------------------

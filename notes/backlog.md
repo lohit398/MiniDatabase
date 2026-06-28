@@ -118,6 +118,16 @@ Cross-day deferred work. Items added with reason and "when this bites" so priori
 - **Fix concept:** At the end of `parse()`, `consume(TokenType.EOF)` (or assert `peek().type == EOF`) and raise a `ParseError` with source position otherwise. One guard turns trailing-garbage cases from silent-pass into a loud, correct error. Add an attacking test: `FROM users x y z` must raise.
 - **Status:** Pre-existing — the EOF guard never existed; aliases made the symptom more reachable but did not cause it. Surfaced 2026-06-22. Not a week-1 done-bar clause; backlog for a near-term hardening pass (pairs naturally with source-position error polish).
 
+### SCAN-1 — NULL handling in CSV ingestion (recognition + three-valued logic)
+
+- **What:** `SeqScan` should eventually represent missing CSV values as a NULL (Python `None`). Attempted ad-hoc during the week-2 SeqScan slice (2026-06-28): `next()` mapped both `""` and the literal text `"null"` to `None`, plus `.strip()` on every value. Reverted as unplanned scope.
+- **Why it matters / why reverted:**
+  - **The `"null"`-text coercion was a bug.** The 4-char string `"null"` is legitimate data (a name, a code). Mapping it to `None` destroys information silently and irreversibly. No mainstream engine does this by default — Postgres `COPY CSV` and DuckDB `read_csv` treat an *empty* field as NULL, and let `"null"` be a marker only via explicit opt-in (`NULL 'null'` / `nullstr`).
+  - **Empty→NULL is defensible but is a *policy*, not a constant.** DuckDB/Postgres do it; SQLite `.import` does not. The engines make the null-marker **configurable per-source** precisely because there's no universal answer. So it belongs in a config knob, not welded into the operator.
+  - **The consumer that gives `None` meaning doesn't exist yet.** Until the WHERE/expression evaluator is built, an emitted `None` has undefined behavior downstream — `None > 30` either `TypeError`s or accidentally does the right thing by luck. NULL *recognition* belongs at scan/ingest; NULL *logic* (three-valued: `NULL = NULL` is not true, `WHERE x = NULL` matches nothing) belongs in the evaluator. Build both together, on purpose.
+- **Fix concept (when resumed):** (a) recognise NULL via a configurable marker (default: empty field only, NOT `"null"`); (b) design three-valued comparison logic in the expression evaluator alongside it; (c) decide `.strip()` policy explicitly (CSV hygiene vs. preserving leading/trailing spaces).
+- **When this bites:** Build it with the **WHERE/expression evaluator** (week 2, the Filter + expr-eval slice) — that's the first place NULL semantics actually matter and can be designed correctly. Not before.
+
 ---
 
 ## Resolved

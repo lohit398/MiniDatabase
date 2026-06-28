@@ -125,6 +125,7 @@ Monthly: public artifact — blog post or polished README.
 - Stalls happen — silence after a stall is the failure mode, not the stall itself.
 - "True friend" = tells you the truth when it's uncomfortable. Both ways.
 - **I write the implementation code.** The coach explains, diagnoses, reviews, runs tests, and probes — never hands over MiniDatabase code. Same for CP: methodology only, never solutions.
+- **Why before how, always.** Whenever the coach gives a *how* — a design, an interface, an implementation approach, a fix — it must first give the *why*: what problem it solves, why it's needed, why this shape over the alternatives. No mechanics handed over without the reasoning that motivates them. A *how* without a *why* is something to memorize, not understand; this project is for understanding.
 
 ### Definition-of-done discipline (added 2026-06-17, after two repeats of the same failure)
 
