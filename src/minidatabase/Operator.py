@@ -7,7 +7,7 @@ class Operator(ABC):
         pass
 
     @abstractmethod
-    def open(self,file:str):
+    def open(self):
         pass
 
     @abstractmethod

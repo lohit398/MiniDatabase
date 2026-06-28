@@ -3,11 +3,14 @@ from minidatabase.SeqScan import SeqScan
 
 def test_seq_scan():
     scan = SeqScan("tests/fixtures/users.csv")
+    scan.open()
     rows = []
     while True:
         row = scan.next()
-        if(row == None):
+        if len(rows) == 5:
             assert row == None
+        
+        if(row == None):
             scan.close()
             break
         rows.append(row)
