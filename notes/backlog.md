@@ -120,7 +120,7 @@ Cross-day deferred work. Items added with reason and "when this bites" so priori
 
 ### SCAN-1 — NULL handling in CSV ingestion (recognition + three-valued logic)
 
-- **What:** `SeqScan` should eventually represent missing CSV values as a NULL (Python `None`). Attempted ad-hoc during the week-2 SeqScan slice (2026-06-28): `next()` mapped both `""` and the literal text `"null"` to `None`, plus `.strip()` on every value. Reverted as unplanned scope.
+- **What:** `SeqScan` should eventually represent missing CSV values as a NULL (Python `None`). During the week-2 SeqScan slice (2026-06-28): `next()` first mapped both `""` and the literal text `"null"` to `None`, plus `.strip()` on every value. **Decision:** the `"null"`-text coercion and `.strip()` were reverted; **empty-field `""` → `None` was kept** (the defensible default — see below). Remaining backlog work is the configurable marker + three-valued logic.
 - **Why it matters / why reverted:**
   - **The `"null"`-text coercion was a bug.** The 4-char string `"null"` is legitimate data (a name, a code). Mapping it to `None` destroys information silently and irreversibly. No mainstream engine does this by default — Postgres `COPY CSV` and DuckDB `read_csv` treat an *empty* field as NULL, and let `"null"` be a marker only via explicit opt-in (`NULL 'null'` / `nullstr`).
   - **Empty→NULL is defensible but is a *policy*, not a constant.** DuckDB/Postgres do it; SQLite `.import` does not. The engines make the null-marker **configurable per-source** precisely because there's no universal answer. So it belongs in a config knob, not welded into the operator.

@@ -31,7 +31,7 @@ class SeqScan(Operator):
             if row[index] == "":
                 r[col] = None
             else:
-                r[col] = (row[index]).strip()
+                r[col] = row[index]
         return r
         
 
