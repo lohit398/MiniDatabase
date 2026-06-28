@@ -28,7 +28,7 @@ class SeqScan(Operator):
             return None
         r = {}
         for index,col in enumerate(self.cols):
-            if row[index] == "" or row[index] == 'null':
+            if row[index] == "":
                 r[col] = None
             else:
                 r[col] = (row[index]).strip()

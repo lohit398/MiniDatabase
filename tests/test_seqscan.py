@@ -16,7 +16,7 @@ def test_seq_scan():
         'country':'US'
     }
     assert rows[3] == {
-        'name':None,
+        'name':'null',
         'age':'25',
         'country':'France'
     }
