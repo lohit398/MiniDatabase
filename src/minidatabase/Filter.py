@@ -14,9 +14,13 @@ class ExpressionCantBeParsed(Exception):
 class InvalidOperation(Exception):
     pass
 
+class NoneException(Exception):
+    pass
+
 class Filter(Operator):
-    def __init__(self,expr:Expr,file_path):
+    def __init__(self,expr:Expr,scan:SeqScan):
         self.Expr = expr
+        self.scan = scan
 
     def isOperator(self,val:str):
         if(">" == val or ">=" == val or "<" == val or  "<=" == val or "=" == val or "!=" == val or "<>" == val):
@@ -30,7 +34,9 @@ class Filter(Operator):
     
     def typeCast(self,val,eVal):
         try:
-            if(eVal == int):
+            if(val == None):
+                raise NoneException(f"None can not be converted to type {eval}")
+            elif(eVal == int):
                 return int(val)
             elif(eVal == float):
                 return float(val)
@@ -40,6 +46,8 @@ class Filter(Operator):
                 raise ParseError(f"Unknown Type!")
         except ParseError:
             raise ParseError(f"Unknown Type {eVal}")
+        except NoneException:
+            raise NoneException(f"None can not be converted to type {eval}")
         except:
             raise ParseError(f"Value {val} can not be typecasted to {eVal}")
             
@@ -51,32 +59,44 @@ class Filter(Operator):
                 raise ExpressionCantBeParsed(f"Expression can not be parsed right now: {a}{opr}{b}")
             
             eVal = a['type'] if a['type'] != 'UNKNOWN' else b['type'] #expected values from cols
+
+            try:
+                match opr:
+                    case '>':
+                        return self.typeCast(a['val'],eVal) > self.typeCast(b['val'],eVal)
+                    case '>=':
+                        return self.typeCast(a['val'],eVal) >= self.typeCast(b['val'],eVal)
+                    case '=':
+                        return self.typeCast(a['val'],eVal) == self.typeCast(b['val'],eVal)
+                    case '<':
+                        return self.typeCast(a['val'],eVal) < self.typeCast(b['val'],eVal)
+                    case '<=':
+                        return self.typeCast(a['val'],eVal) <= self.typeCast(b['val'],eVal)
+                    case '<>':
+                        return self.typeCast(a['val'],eVal) != self.typeCast(b['val'],eVal)
+                    case "!=":
+                        return self.typeCast(a['val'],eVal) != self.typeCast(b['val'],eVal)
+                    case _:
+                        raise InvalidOperation(f'Invalid Operation on :{a['val']}{opr}{b['val']}')
+            except NoneException:
+                return None
             
-            match opr:
-                case '>':
-                    return self.typeCast(a['val'],eVal) > self.typeCast(b['val'],eVal)
-                case '>=':
-                    return self.typeCast(a['val'],eVal) >= self.typeCast(b['val'],eVal)
-                case '=':
-                    return self.typeCast(a['val'],eVal) == self.typeCast(b['val'],eVal)
-                case '<':
-                    return self.typeCast(a['val'],eVal) < self.typeCast(b['val'],eVal)
-                case '<=':
-                    return self.typeCast(a['val'],eVal) <= self.typeCast(b['val'],eVal)
-                case '<>':
-                    return self.typeCast(a['val'],eVal) != self.typeCast(b['val'],eVal)
-                case "!=":
-                    return self.typeCast(a['val'],eVal) != self.typeCast(b['val'],eVal)
-                case _:
-                    raise InvalidOperation(f'Invalid Operation on :{a['val']}{opr}{b['val']}')
+
         else:
             raise ParseError(f"Unidentified Operator: {opr}")
 
     def logicalOperator(self,a,b,opr):
         if(not(opr == 'and' or opr == 'or')):
             raise InvalidOperation(f'Invalid Operation on :{a['val']}{opr}{b['val']}')
+        elif(a == None and b == None):
+            return False
+        elif((type(a) is bool and b == None) or (a == None and type(b) is bool)):
+            if(opr == 'or'):
+                return a if type(a) is bool else b
+            elif(opr == 'and'):
+                return False
         elif(not(type(a) is bool and type(b) is bool)):
-            raise ExpressionCantBeParsed(f'Logical Operator can not be applied on these values {a}{b}')
+            raise ExpressionCantBeParsed(f'Logical Operator can not be applied on these values {a} and {b}')
 
         match opr:
             case "and":
@@ -100,7 +120,6 @@ class Filter(Operator):
                 return {'val' : node.value,'type': int}
             else:
                 raise ParseError(f"Unexpected Literal: {node.value}")
-            
         elif (isinstance(node,Identifier)):
             if(node.name in row):
                 return {'val':row[node.name], 'type':'UNKNOWN'}
@@ -112,4 +131,22 @@ class Filter(Operator):
 
 
     def open(self):
-        pass
+        self.scan.open()
+        self.cols = self.scan.cols
+
+    def next(self):
+        row = self.scan.next()
+        while row != None:
+            try:
+                if(self.walkExprTree(self.Expr,row)):
+                    return row
+            except NoneException:
+                row = self.scan.next()
+                continue
+            row = self.scan.next()
+            
+        return None
+
+    def close(self):
+        self.scan.close()
+

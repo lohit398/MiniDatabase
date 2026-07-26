@@ -24,17 +24,16 @@ class SeqScan(Operator):
 
     
     def next(self):
-        row = next(self.reader,None)
-        if row == None:
+        row = next(self.reader, None)
+        if row is None or len(row) == 0:
             return None
         r = {}
-        for index,col in enumerate(self.cols):
-            if row[index] == "":
+        for index, col in enumerate(self.cols):
+            if index >= len(row) or row[index] == "":
                 r[col] = None
             else:
                 r[col] = row[index]
         return r
-        
 
     
     def close(self):
